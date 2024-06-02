@@ -7,6 +7,9 @@ import {SlOptions} from 'react-icons/sl'
 import { useCallback, useMemo } from "react";
 import FeedCard from "./components/FeedCard";
 import {CredentialResponse, GoogleLogin} from '@react-oauth/google'
+import toast from "react-hot-toast";
+import { graphqlClient } from "@/clients/api";
+import { verifyUserGoogleTokenQuery } from "@/graphql/query/user";
 
 
 
@@ -63,13 +66,31 @@ const sidebarMenuItems: TwitterSidebarButton[] =
       link: "/",
     },
   ]
+  
 
   
 export default function Home() {
 
-  const handleLoginWithGoogle=useCallback((cred:CredentialResponse)=>{
+ 
+  const handleLoginWithGoogle = useCallback(async (cred: CredentialResponse) => {
+    const googleToken = cred.credential;
+    if (!googleToken) {
+      return toast.error('User not found');
+    }
 
-  },[])
+    try {
+      const { verifyGoogleToken } = await graphqlClient.request(verifyUserGoogleTokenQuery, { token: googleToken });
+      toast.success('Success');
+      console.log(verifyGoogleToken);
+
+      if (verifyGoogleToken) {
+        window.localStorage.setItem('___twitter_token', verifyGoogleToken);
+      }
+    } catch (error) {
+      console.error('Error verifying Google token:', error);
+      toast.error('Error verifying Google token');
+    }
+  }, []);
 
   return (
     <div className={inter.className}>
@@ -110,10 +131,7 @@ export default function Home() {
           <div className="bg-gray-700 p-4 rounded-xl">
           <h1 className="text-white font-bold mb-10">New To Twitter?</h1>
           <GoogleLogin 
-            onSuccess={(cred)=>{
-              console.log(cred)
-            
-            }}
+            onSuccess={handleLoginWithGoogle}
 
             />
             </div>

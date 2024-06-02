@@ -17,6 +17,9 @@ const FeedCard :React.FC= () => {
       alt='profile image'
       className='rounded-full'
       />
+
+
+      
     </div>
     <div className='col-span-11 '>
     <p className='font-bold'>sahil chalke</p>
