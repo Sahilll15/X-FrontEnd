@@ -4,14 +4,23 @@ import { FiMessageCircle } from 'react-icons/fi';
 import {FaRetweet} from 'react-icons/fa'
 import {CiHeart} from 'react-icons/ci'
 import {MdOutlineFileUpload} from 'react-icons/md'
+import { Tweet } from '@/gql/graphql';
 
-const FeedCard :React.FC= () => {
+
+interface FeedCardProps{
+  data?: Tweet;
+}
+
+const FeedCard :React.FC<FeedCardProps>= (props) => {
+  const {data}=props;
   return ( 
 <div className=' border-b-2 border-gray-700  hover:bg-gray-900  transition-all cursor-pointer'>
     <div className='grid grid-cols-12 p-5 '>
     <div className='col-span-1 '>
     <Image 
-      src='https://avatars.githubusercontent.com/u/109215419?s=40&v=4'
+      src={
+        data?.author?.profileImageURL as string
+      }
       height={50}
       width={50}
       alt='profile image'
@@ -22,13 +31,14 @@ const FeedCard :React.FC= () => {
       
     </div>
     <div className='col-span-11 '>
-    <p className='font-bold'>sahil chalke</p>
+    <p className='font-bold'>{
+      data?.author?.firstName + ' ' + data?.author?.lastName
+  
+}</p>
 
-    <p className='text-gray-500'>@sahilchalke</p>
 
-    <p>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam eget
-    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Magnam, hic.
+    <p className='mt-4'>
+    {data?.content}
     </p>
 
     
