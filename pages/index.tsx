@@ -10,6 +10,8 @@ import {CredentialResponse, GoogleLogin} from '@react-oauth/google'
 import toast from "react-hot-toast";
 import { graphqlClient } from "@/clients/api";
 import { verifyUserGoogleTokenQuery } from "@/graphql/query/user";
+import { userCurretUser } from "@/hooks/user";
+import { QueryClient, useQueryClient } from "@tanstack/react-query";
 
 
 
@@ -71,7 +73,10 @@ const sidebarMenuItems: TwitterSidebarButton[] =
   
 export default function Home() {
 
- 
+  
+  const {user}=userCurretUser();
+  const queryClient=useQueryClient();
+
   const handleLoginWithGoogle = useCallback(async (cred: CredentialResponse) => {
     const googleToken = cred.credential;
     if (!googleToken) {
@@ -85,6 +90,8 @@ export default function Home() {
 
       if (verifyGoogleToken) {
         window.localStorage.setItem('___twitter_token', verifyGoogleToken);
+
+        await queryClient.invalidateQueries({ queryKey: ['getCurrentUser'] });
       }
     } catch (error) {
       console.error('Error verifying Google token:', error);
@@ -95,7 +102,7 @@ export default function Home() {
   return (
     <div className={inter.className}>
       <div className="grid grid-cols-12 h-screen w-screen px-56">
-        <div className="col-span-3 border-r-2 border-r-slate-500  pt-6">
+        <div className="col-span-3 border-r-2 border-r-slate-500  pt-6 relative">
           <div className="hover:bg-gray-500 w-fit p-2 rounded-full">
           <BsTwitter className="text-6xl " />
           </div>
@@ -115,6 +122,21 @@ export default function Home() {
          <button className="flex justify-center bg-[#268CD8] w-full px-8 py-4 rounded-full ">
             Tweet
           </button>
+
+      {
+        user && (
+          <div className="absolute bottom-4 flex gap-4 items-center font-bold bg-gray-600 p-2 rounded-full">
+          {
+            user && user.profileImageURL && (
+              <Image className="rounded-full" alt='profile' src={user.profileImageURL}  height={50} width={50}/>
+            )
+          }
+
+         <h3>{user.firstName} {user.lastName}</h3>
+         </div>
+
+        )
+      }
          </div>
           
         </div>
@@ -127,16 +149,20 @@ export default function Home() {
           
         </div>
         
-        <div className="col-span-3  border-r-slate-500">
-          <div className="bg-gray-700 p-4 rounded-xl">
-          <h1 className="text-white font-bold mb-10">New To Twitter?</h1>
-          <GoogleLogin 
-            onSuccess={handleLoginWithGoogle}
-
-            />
+          {
+            !user && (
+              <div className="col-span-3  border-r-slate-500">
+              <div className="bg-gray-700 p-4 rounded-xl">
+              <h1 className="text-white font-bold mb-10">New To Twitter?</h1>
+              <GoogleLogin 
+                onSuccess={handleLoginWithGoogle}
+    
+                />
+                </div>
+    
             </div>
-
-        </div>
+            )
+          }
       </div>
     </div>
   );
