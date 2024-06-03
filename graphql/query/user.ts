@@ -16,6 +16,18 @@ export const getCurrentUserQuery=graphql(`
           profileImageURL,
           firstName,
           lastName,
+          following {
+            email
+            id
+            firstName
+            profileImageURL
+          },
+          followers {
+            email
+            id
+            firstName
+            profileImageURL
+          },
           tweets{
             id,
             content,
@@ -24,10 +36,52 @@ export const getCurrentUserQuery=graphql(`
               profileImageURL,
               firstName,
               lastName
+              id
             }
           }
         }
       }
     `)
+
+
+  export const getUserByIdQuery=graphql(
+    `
+    query GetUserById($userId: String!) {
+      getUserById(userId: $userId) {
+        firstName
+        lastName
+        profileImageURL
+        createdAt
+        updatedAt
+        id
+        following {
+          email
+          firstName
+          profileImageURL
+          id
+        },
+        followers {
+          email
+          firstName
+          profileImageURL
+          id
+        },
+        tweets{
+          id
+          content
+          imageURL
+          author{
+            id
+            firstName
+            lastName
+            profileImageURL
+          }
+        }
+        
+      }
+    }
+    `
+  )
+
 
 

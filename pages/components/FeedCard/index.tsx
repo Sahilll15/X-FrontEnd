@@ -5,6 +5,7 @@ import {FaRetweet} from 'react-icons/fa'
 import {CiHeart} from 'react-icons/ci'
 import {MdOutlineFileUpload} from 'react-icons/md'
 import { Tweet } from '@/gql/graphql';
+import Link from 'next/link';
 
 
 interface FeedCardProps{
@@ -17,7 +18,8 @@ const FeedCard :React.FC<FeedCardProps>= (props) => {
 <div className=' border-b-2 border-gray-700  hover:bg-gray-900  transition-all cursor-pointer'>
     <div className='grid grid-cols-12 p-5 '>
     <div className='col-span-1 '>
-    <Image 
+    <Link href={`/${data?.author?.id}`}>
+      <Image 
       src={
         data?.author?.profileImageURL as string
       }
@@ -25,7 +27,11 @@ const FeedCard :React.FC<FeedCardProps>= (props) => {
       width={50}
       alt='profile image'
       className='rounded-full'
-      />
+      />  
+
+    </Link>
+   
+
 
 
       

@@ -89,12 +89,17 @@ const TwitterLayout:React.FC<TwitterLayoutProps>=(props)=>{
 
       if (verifyGoogleToken) {
         window.localStorage.setItem('___twitter_token', verifyGoogleToken);
+        await queryclient.invalidateQueries({
+          queryKey: ['getCurrentUser']
+        });
+  
       }
 
-      queryclient.invalidateQueries({
+      await queryclient.fetchQuery({
         queryKey: ['getCurrentUser']
-      });
+      })
 
+  
     } catch (error) {
       console.error('Error verifying Google token:', error);
       toast.error('Error verifying Google token');
